@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <title>A-FRAME — Cena extra</title>
+  <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+</head>
+<body>
+  <a-scene>
+    <!-- Caixa giratória -->
+    <a-box position="-1 0.75 -3" rotation="0 45 0" color="#4CC3D9" animation="property: rotation; to: 0 405 0; loop: true; dur: 8000"></a-box>
+
+    <!-- Esfera com iluminação -->
+    <a-sphere position="0 1.25 -3" radius="1.25" color="#EF2D5E" shadow></a-sphere>
+
+    <!-- Plano chão -->
+    <a-plane position="0 0 -4" rotation="-90 0 0" width="6" height="6" color="#7BC8A4"></a-plane>
+
+    <!-- Texto -->
+    <a-text value="Cena 2 — exemplo" position="-1.5 2.8 -3" color="#FFFFFF" width="6"></a-text>
+
+    <!-- Céu -->
+    <a-sky color="#88CCFF"></a-sky>
+  </a-scene>
+</body>
+</html>
