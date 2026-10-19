@@ -1,372 +1,60 @@
 
 <!DOCTYPE html>
-<html lang="pt">
+<html>
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>VELO — Domestic Surveillance</title>
-
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #100a12;
-    }
-
-    #aviso {
-      position: fixed;
-      bottom: 18px;
-      left: 18px;
-      color: white;
-      background: rgba(30, 10, 25, 0.8);
-      border: 1px solid rgba(255, 143, 199, 0.5);
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 12px;
-      z-index: 10;
-    }
-
-    #ficha {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: min(300px, 80vw);
-      padding: 22px;
-      color: white;
-      background: rgba(55, 15, 43, 0.88);
-      border: 1px solid #ff8fc7;
-      border-radius: 12px;
-      backdrop-filter: blur(12px);
-      z-index: 20;
-    }
-
-    #ficha[hidden] {
-      display: none;
-    }
-
-    #ficha button {
-      float: right;
-      color: white;
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-    }
-
-    #ficha h2 {
-      color: #ffb5d9;
-      font-weight: 400;
-    }
-
-    #ficha dt {
-      color: #ffb5d9;
-      margin-top: 10px;
-      font-size: 12px;
-    }
-
-    #ficha dd {
-      margin: 3px 0;
-      font-size: 14px;
-    }
-  </style>
 </head>
 
 <body>
+<a-scene mindar-image="imageTargetSrc: ./targets-2.mind"
+  color-space="sRGB" vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
 
-  <a-scene
-    mindar-image="imageTargetSrc: ./targets.mind; uiScanning: yes; uiLoading: yes"
-    color-space="sRGB"
-    renderer="colorManagement: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <a-assets>
-      <a-mixin
-        id="vidro"
-        material="shader: flat; color: #ff8fc7; opacity: 0.18; transparent: true; side: double; depthWrite: false">
-      </a-mixin>
+  <a-entity id="alvo" mindar-image-target="targetIndex: 0">
 
-      <a-mixin
-        id="holograma"
-        material="shader: flat; color: #ff8fc7; wireframe: true; transparent: true; opacity: 0.95"
-        animation="property: scale; from: 0 0 0; to: 1 1 1; dur: 700; startEvents: revelar">
-      </a-mixin>
-    </a-assets>
+    <!-- Casa -->
+    <a-box position="0 0 0" width="0.8" height="0.6" depth="0.5"
+      color="#f3d9e8"></a-box>
+    <a-cone position="0 0.45 0" radius-bottom="0.65"
+      radius-top="0" height="0.4" color="#d98ab5"></a-cone>
+    <a-box position="0 -0.15 0.26" width="0.15" height="0.3"
+      depth="0.02" color="#9b557d"></a-box>
 
-    <a-camera position="0 0 0"
-              look-controls="enabled: false">
-    </a-camera>
+    <!-- Plantinha -->
+    <a-entity id="planta" scale="0 0 0"
+      animation="property: scale; from: 0 0 0; to: 1 1 1;
+      dur: 1800; easing: easeOutElastic; startEvents: crescer">
 
-    <!-- A casa aparece ao reconhecer a imagem-alvo -->
-    <a-entity mindar-image-target="targetIndex: 0">
+      <a-cylinder position="0 0.65 0" radius="0.018"
+        height="0.6" color="#43875a"></a-cylinder>
 
-      <a-entity position="0 0 0" scale="0.2 0.2 0.2">
-
-        <!-- CHÃO -->
-        <a-plane
-          position="0 0 0"
-          width="6.5"
-          height="3.2"
-          material="shader: flat; color: #35162e; opacity: 0.35; transparent: true">
-        </a-plane>
-
-        <!-- SÓTÃO -->
-        <a-entity id="sotao" position="0 1.65 0">
-
-          <a-box class="parede"
-            data-room="sotao"
-            mixin="vidro"
-            width="3.1" height="0.7" depth="0.12">
-          </a-box>
-
-          <a-box class="objeto"
-            data-room="sotao" data-id="cartas"
-            mixin="holograma"
-            visible="false"
-            position="-0.7 0 0.2"
-            width="0.3" height="0.2" depth="0.2">
-          </a-box>
-
-          <a-box class="objeto"
-            data-room="sotao" data-id="diario"
-            mixin="holograma"
-            visible="false"
-            position="0.6 0 0.2"
-            width="0.3" height="0.04" depth="0.22">
-          </a-box>
-        </a-entity>
-
-        <!-- TELHADO ESQUEMÁTICO -->
-        <a-cone
-          position="0 2.3 0"
-          radius-bottom="2.1"
-          radius-top="0"
-          height="0.7"
-          segments-radial="4"
-          material="shader: flat; color: #fff4f8; wireframe: true; opacity: 0.45; transparent: true">
-        </a-cone>
-
-        <!-- COMPARTIMENTO 1: SALA -->
-        <a-entity id="sala" position="-1.4 0.45 0">
-
-          <a-box class="parede"
-            data-room="sala"
-            mixin="vidro"
-            width="2.2" height="1.6" depth="0.12">
-          </a-box>
-
-          <a-cylinder class="objeto"
-            data-room="sala" data-id="vinil"
-            mixin="holograma"
-            visible="false"
-            position="-0.5 0 0.2"
-            radius="0.18" height="0.02">
-          </a-cylinder>
-
-          <a-torus class="objeto"
-            data-room="sala" data-id="relogio"
-            mixin="holograma"
-            visible="false"
-            position="0.5 0.1 0.2"
-            radius="0.12" radius-tubular="0.025">
-          </a-torus>
-        </a-entity>
-
-        <!-- COMPARTIMENTO 2: ARQUIVO -->
-        <a-entity id="arquivo" position="0.8 0.45 0">
-
-          <a-box class="parede"
-            data-room="arquivo"
-            mixin="vidro"
-            width="2.2" height="1.6" depth="0.12">
-          </a-box>
-
-          <a-sphere class="objeto"
-            data-room="arquivo" data-id="perola"
-            mixin="holograma"
-            visible="false"
-            position="-0.5 0 0.2"
-            radius="0.08">
-          </a-sphere>
-
-          <a-torus-knot class="objeto"
-            data-room="arquivo" data-id="chave"
-            mixin="holograma"
-            visible="false"
-            position="0.5 0 0.2"
-            radius="0.08" radius-tubular="0.015">
-          </a-torus-knot>
-        </a-entity>
-
-        <!-- CASA DE BANHO -->
-        <a-entity id="banho" position="2.35 0.45 0">
-
-          <a-box class="parede"
-            data-room="banho"
-            mixin="vidro"
-            width="0.9" height="1.6" depth="0.12">
-          </a-box>
-
-          <a-box class="objeto"
-            data-room="banho" data-id="frasco"
-            mixin="holograma"
-            visible="false"
-            position="0 0 0.2"
-            width="0.2" height="0.12" depth="0.12">
-          </a-box>
-        </a-entity>
-
-      </a-entity>
+      <a-sphere position="-0.12 0.75 0" scale="1.5 0.45 0.5"
+        rotation="0 0 30" color="#65b879"></a-sphere>
+      <a-sphere position="0.12 0.9 0" scale="1.5 0.45 0.5"
+        rotation="0 0 -30" color="#398b55"></a-sphere>
     </a-entity>
 
-    <!-- Cursor e deteção de paredes/objetos -->
-    <a-entity
-      cursor="rayOrigin: mouse; fuse: false"
-      raycaster="objects: .parede, .objeto; far: 200">
-    </a-entity>
+  </a-entity>
+</a-scene>
 
-  </a-scene>
+<script>
+const alvo = document.querySelector('#alvo');
+const planta = document.querySelector('#planta');
 
-  <div id="aviso">
-    <b>VELO</b> · DOMESTIC SURVEILLANCE
-    <br>
-    Simulação ficcional de leitura doméstica.
-    <br>
-    Selecione uma parede para inspecionar.
-  </div>
+alvo.addEventListener('targetFound', () => {
+  planta.setAttribute('scale', '0 0 0');
+  planta.emit('crescer');
+});
 
-  <div id="ficha" hidden>
-    <button id="fechar" aria-label="Fechar">×</button>
-    <small>REGISTO ESPECULATIVO</small>
-    <h2 id="f-nome"></h2>
-    <dl>
-      <dt>Identidade</dt>
-      <dd id="f-identidade"></dd>
-      <dt>Raridade</dt>
-      <dd id="f-raridade"></dd>
-      <dt>Valor estimado</dt>
-      <dd id="f-valor"></dd>
-      <dt>Confidencialidade</dt>
-      <dd id="f-conf"></dd>
-    </dl>
-    <small>Dados fictícios — nenhum objeto foi realmente detetado.</small>
-  </div>
-
-  <script>
-    const dados = {
-      cartas: {
-        nome: "Arquivo pessoal",
-        identidade: "Correspondência privada",
-        raridade: "Não catalogada",
-        valor: "Inestimável",
-        conf: "Restrita"
-      },
-      diario: {
-        nome: "Diário",
-        identidade: "Arquivo íntimo",
-        raridade: "Única",
-        valor: "Não comercial",
-        conf: "Máxima"
-      },
-      vinil: {
-        nome: "Disco de coleção",
-        identidade: "Edição limitada",
-        raridade: "Rara",
-        valor: "€ 450 (fictício)",
-        conf: "Privada"
-      },
-      relogio: {
-        nome: "Relógio antigo",
-        identidade: "Peça de coleção",
-        raridade: "Muito rara",
-        valor: "€ 2.800 (fictício)",
-        conf: "Restrita"
-      },
-      perola: {
-        nome: "Pérola",
-        identidade: "Objeto de coleção",
-        raridade: "Excecional",
-        valor: "€ 900 (fictício)",
-        conf: "Privada"
-      },
-      chave: {
-        nome: "Chave de arquivo",
-        identidade: "Objeto não identificado",
-        raridade: "Desconhecida",
-        valor: "Indeterminado",
-        conf: "Máxima"
-      },
-      frasco: {
-        nome: "Frasco",
-        identidade: "Objeto quotidiano",
-        raridade: "Comum",
-        valor: "€ 15 (fictício)",
-        conf: "Privada"
-      }
-    };
-
-    const ficha = document.querySelector("#ficha");
-    let divisaoAtiva = null;
-
-    // Selecionar uma parede revela os objetos dessa divisão.
-    document.querySelectorAll(".parede").forEach(parede => {
-      parede.addEventListener("click", () => {
-        const divisao = parede.dataset.room;
-
-        if (divisaoAtiva === divisao) {
-          ocultarObjetos(divisao);
-          divisaoAtiva = null;
-          return;
-        }
-
-        if (divisaoAtiva) ocultarObjetos(divisaoAtiva);
-
-        divisaoAtiva = divisao;
-
-        document.querySelectorAll(
-          `.objeto[data-room="${divisao}"]`
-        ).forEach(objeto => {
-          objeto.setAttribute("visible", true);
-          objeto.emit("revelar");
-        });
-      });
-    });
-
-    function ocultarObjetos(divisao) {
-      document.querySelectorAll(
-        `.objeto[data-room="${divisao}"]`
-      ).forEach(objeto => {
-        objeto.setAttribute("visible", false);
-      });
-
-      ficha.hidden = true;
-    }
-
-    // Selecionar um objeto abre a ficha especulativa.
-    document.querySelectorAll(".objeto").forEach(objeto => {
-      objeto.addEventListener("click", () => {
-        const item = dados[objeto.dataset.id];
-        if (!item) return;
-
-        document.querySelector("#f-nome").textContent = item.nome;
-        document.querySelector("#f-identidade").textContent = item.identidade;
-        document.querySelector("#f-raridade").textContent = item.raridade;
-        document.querySelector("#f-valor").textContent = item.valor;
-        document.querySelector("#f-conf").textContent = item.conf;
-
-        ficha.hidden = false;
-      });
-    });
-
-    document.querySelector("#fechar").addEventListener("click", () => {
-      ficha.hidden = true;
-    });
-  </script>
-
+alvo.addEventListener('targetLost', () => {
+  planta.setAttribute('scale', '0 0 0');
+});
+</script>
 </body>
 </html>
+
