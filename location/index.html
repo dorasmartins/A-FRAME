@@ -1,98 +1,63 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html>
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VELO — Imagem-alvo</title>
-  <!-- Se o exemplo do professor usar outras versões, usa os links dele nestas duas linhas -->
+
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  <script src="casa.js"></script>
-  <link rel="stylesheet" href="estilo.css">
+
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #mensagem {
+      position: fixed;
+      top: 40%;
+      left: 25%;
+      color: #b58cff;
+      font: bold 30px Arial, sans-serif;
+      z-index: 10;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      text-shadow: 0 0 12px #ffffff;
+    }
+  </style>
 </head>
+
 <body>
-  <a-scene mindar-image="imageTargetSrc: ./alvo.mind; uiScanning: yes; uiLoading: yes"
-           color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights"
-           vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-
-    <a-assets>
-      <!-- "vidro": aspeto da membrana rosa translúcida -->
-      <a-mixin id="vidro" material="shader: flat; color: #ff8fc7; opacity: 0.18; transparent: true; side: double; depthWrite: false"></a-mixin>
-      <!-- "holograma": aspeto dos objetos (contorno rosa que aparece com animação) -->
-      <a-mixin id="holograma"
-               material="shader: flat; color: #ff8fc7; wireframe: true; transparent: true; opacity: 0.95"
-               animation="property: scale; from: 0 0 0; to: 1 1 1; dur: 900; startEvents: revelar"
-               animation__giro="property: rotation; to: 0 360 0; dur: 16000; loop: true; easing: linear"></a-mixin>
-    </a-assets>
-
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-    <!-- A casa aparece quando a câmara reconhece a imagem-alvo (largura da imagem = 1) -->
-    <a-entity mindar-image-target="targetIndex: 0">
-      <!-- rotation x=90 levanta a casa da imagem; scale ajusta o tamanho -->
-      <a-entity position="0 0 0" rotation="90 0 0" scale="0.2 0.2 0.2">
-
-      <!-- chão -->
-      <a-plane rotation="-90 0 0" width="6.5" height="3.2" position="0.15 0 0"
-               material="shader: flat; color: #ff8fc7; opacity: 0.12; transparent: true"></a-plane>
-
-      <!-- SÓTÃO -->
-      <a-entity position="0.15 1.95 0">
-        <a-box class="parede" mixin="vidro" membrana contorno width="3.1" height="0.7" depth="1.8"></a-box>
-        <a-box mixin="holograma" objeto="id: cartas" visible="false" width="0.3" height="0.2" depth="0.2" position="-0.7 -0.1 0"></a-box>
-        <a-box mixin="holograma" objeto="id: diario" visible="false" width="0.3" height="0.04" depth="0.22" position="0.6 -0.1 0"></a-box>
-      </a-entity>
-      <!-- telhado (só contorno) -->
-      <a-cone radius-bottom="2.4" radius-top="0" height="0.7" segments-radial="4" theta-start="45"
-              position="0.15 2.65 0" scale="1 1 0.6"
-              material="shader: flat; wireframe: true; color: #fff4f8; opacity: 0.45; transparent: true"></a-cone>
-
-      <!-- SALA -->
-      <a-entity position="-1.4 0.8 0">
-        <a-box class="parede" mixin="vidro" membrana contorno width="2.2" height="1.6" depth="1.8"></a-box>
-        <a-cylinder mixin="holograma" objeto="id: vinil" visible="false" radius="0.18" height="0.02" position="-0.5 -0.3 0.1"></a-cylinder>
-        <a-torus mixin="holograma" objeto="id: relogio" visible="false" radius="0.12" radius-tubular="0.025" position="0.5 0.1 -0.2"></a-torus>
-      </a-entity>
-
-      <!-- ARQUIVO (quarto) -->
-      <a-entity position="0.8 0.8 0">
-        <a-box class="parede" mixin="vidro" membrana contorno width="2.2" height="1.6" depth="1.8"></a-box>
-        <a-sphere mixin="holograma" objeto="id: perola" visible="false" radius="0.08" position="-0.5 -0.3 0.2"></a-sphere>
-        <a-torus-knot mixin="holograma" objeto="id: chave" visible="false" radius="0.08" radius-tubular="0.015" position="0.5 0 -0.1"></a-torus-knot>
-      </a-entity>
-
-      <!-- CASA DE BANHO -->
-      <a-entity position="2.35 0.8 0">
-        <a-box class="parede" mixin="vidro" membrana contorno width="0.9" height="1.6" depth="1.8"></a-box>
-        <a-box mixin="holograma" objeto="id: remedios" visible="false" width="0.2" height="0.06" depth="0.12" position="0 -0.4 0.3"></a-box>
-      </a-entity>
-      </a-entity>
-    </a-entity>
-
-    <!-- Cursor: rato no computador, toque no telemóvel. Só "vê" paredes e objetos revelados -->
-    <a-entity cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .parede, .objeto; far: 200"></a-entity>
+  <a-scene embedded>
+    <a-entity camera position="0 0 0"></a-entity>
   </a-scene>
 
+  <div id="mensagem">Olá Arlindo, olá arlindo</div>
 
-  <!-- Aviso permanente: deixa claro que é uma simulação -->
-  <div id="aviso">
-    <b>VELO</b> · protótipo de leitura doméstica<br>
-    Simulação ficcional: nenhum objeto foi detetado. Toca nas paredes.
-  </div>
+  <script>
+    const texto = document.querySelector('#mensagem');
+    let arrastar = false;
+    let dx = 0, dy = 0;
 
-  <!-- Ficha do objeto (preenchida por casa.js) -->
-  <div id="ficha" hidden>
-    <button onclick="fecharFicha()">×</button>
-    <small>Registo especulativo</small>
-    <h2 id="f-nome"></h2>
-    <dl>
-      <dt>Identidade</dt><dd id="f-identidade"></dd>
-      <dt>Raridade</dt><dd id="f-raridade"></dd>
-      <dt>Valor estimado</dt><dd id="f-valor"></dd>
-      <dt>Confidencialidade</dt><dd id="f-conf"></dd>
-      <dt>Inferência</dt><dd id="f-inferencia"></dd>
-    </dl>
-    <small>Ficção: nenhum objeto foi realmente detetado.</small>
-  </div>
+    texto.addEventListener('pointerdown', e => {
+      arrastar = true;
+      dx = e.clientX - texto.offsetLeft;
+      dy = e.clientY - texto.offsetTop;
+      texto.setPointerCapture(e.pointerId);
+      texto.style.cursor = 'grabbing';
+    });
+
+    texto.addEventListener('pointermove', e => {
+      if (!arrastar) return;
+      texto.style.left = (e.clientX - dx) + 'px';
+      texto.style.top = (e.clientY - dy) + 'px';
+    });
+
+    texto.addEventListener('pointerup', () => {
+      arrastar = false;
+      texto.style.cursor = 'grab';
+    });
+
+    texto.addEventListener('pointercancel', () => {
+      arrastar = false;
+      texto.style.cursor = 'grab';
+    });
+  </script>
 </body>
 </html>
