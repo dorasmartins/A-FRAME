@@ -1,39 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-
   <style>
-    body { margin: 0; overflow: hidden; }
+    body { margin: 0; overflow: hidden; font-family: Arial; }
+    #camera {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
     #mensagem {
       position: fixed;
       top: 40%;
-      left: 25%;
+      left: 15%;
       color: #b58cff;
-      font: bold 30px Arial, sans-serif;
-      z-index: 10;
+      font-size: 30px;
+      font-weight: bold;
+      text-shadow: 0 0 8px white;
       cursor: grab;
       user-select: none;
       touch-action: none;
-      text-shadow: 0 0 12px #ffffff;
+      z-index: 2;
+    }
+    #ligar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 3;
+      padding: 12px 18px;
+      border: 0;
+      border-radius: 10px;
+      background: #b58cff;
+      color: white;
+      font-size: 16px;
     }
   </style>
 </head>
-
 <body>
-  <a-scene embedded>
-    <a-entity camera position="0 0 0"></a-entity>
-  </a-scene>
 
+  <video id="camera" autoplay playsinline></video>
+  <button id="ligar">Ligar câmara</button>
   <div id="mensagem">Olá Arlindo, olá arlindo</div>
 
   <script>
+    const video = document.querySelector('#camera');
+    const botao = document.querySelector('#ligar');
     const texto = document.querySelector('#mensagem');
-    let arrastar = false;
-    let dx = 0, dy = 0;
+
+    botao.onclick = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+          audio: false
+        });
+        video.srcObject = stream;
+        botao.style.display = 'none';
+      } catch (erro) {
+        alert('Não foi possível ligar a câmara. Verifica as permissões do navegador.');
+      }
+    };
+
+    let arrastar = false, dx = 0, dy = 0;
 
     texto.addEventListener('pointerdown', e => {
       arrastar = true;
@@ -49,15 +80,14 @@
       texto.style.top = (e.clientY - dy) + 'px';
     });
 
-    texto.addEventListener('pointerup', () => {
+    function parar() {
       arrastar = false;
       texto.style.cursor = 'grab';
-    });
+    }
 
-    texto.addEventListener('pointercancel', () => {
-      arrastar = false;
-      texto.style.cursor = 'grab';
-    });
+    texto.addEventListener('pointerup', parar);
+    texto.addEventListener('pointercancel', parar);
   </script>
+
 </body>
 </html>
