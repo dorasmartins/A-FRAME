@@ -6,31 +6,35 @@
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 </head>
+
 <body>
 <a-scene mindar-image="imageTargetSrc: ./targets-2.mind"
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: false">
 
-  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  <a-camera position="0 0 0"
+    look-controls="enabled: false"></a-camera>
 
+  <!-- Tudo fica ancorado à foto reconhecida -->
   <a-entity id="alvo" mindar-image-target="targetIndex: 0">
 
     <!-- Casa -->
-    <a-box position="0 0 0" width="0.8" height="0.6"
-      depth="0.5" color="#f3d9e8"></a-box>
-    <a-cone position="0 0.45 0" radius-bottom="0.65"
+    <a-box position="0 0 0" width="0.8" height="0.5"
+      depth="0.4" color="#f3d9e8"></a-box>
+
+    <a-cone position="0 0.4 0" radius-bottom="0.6"
       radius-top="0" height="0.35" color="#d98ab5"></a-cone>
 
-    <!-- Caule -->
-    <a-cylinder id="caule" position="0 0.3 0"
+    <!-- Caule cresce primeiro -->
+    <a-cylinder id="caule" position="0 0.35 0"
       radius="0.018" height="0.01"
       color="#43875a"></a-cylinder>
 
-    <!-- Folhas -->
-    <a-sphere id="folha1" position="-0.12 0.55 0"
+    <!-- Folhas crescem depois, para lados opostos -->
+    <a-sphere id="folha1" position="-0.12 0.72 0"
       scale="0 0 0" color="#65b879"></a-sphere>
 
-    <a-sphere id="folha2" position="0.12 0.72 0"
+    <a-sphere id="folha2" position="0.12 0.88 0"
       scale="0 0 0" color="#398b55"></a-sphere>
 
   </a-entity>
@@ -39,50 +43,45 @@
 <script>
 const alvo = document.querySelector('#alvo');
 const caule = document.querySelector('#caule');
-const folha1 = document.querySelector('#folha1');
-const folha2 = document.querySelector('#folha2');
+const folhas = [
+  document.querySelector('#folha1'),
+  document.querySelector('#folha2')
+];
 
 alvo.addEventListener('targetFound', () => {
   caule.setAttribute('animation', {
     property: 'height',
     from: 0.01,
     to: 0.65,
-    dur: 3500,
+    dur: 4000,
     easing: 'easeInOutSine'
   });
 
-  caule.setAttribute('position', '0 0.62 0');
+  caule.setAttribute('position', '0 0.67 0');
 
-  folha1.setAttribute('animation', {
-    property: 'scale',
-    from: '0 0 0',
-    to: '0.16 0.07 0.05',
-    dur: 1800,
-    delay: 3500,
-    easing: 'easeInOutSine'
-  });
-
-  folha2.setAttribute('animation', {
-    property: 'scale',
-    from: '0 0 0',
-    to: '0.07 0.16 0.05',
-    dur: 1800,
-    delay: 5300,
-    easing: 'easeInOutSine'
+  folhas.forEach((folha, i) => {
+    folha.setAttribute('scale', '0 0 0');
+    folha.setAttribute('animation', {
+      property: 'scale',
+      from: '0 0 0',
+      to: i === 0 ? '0.16 0.07 0.04' : '0.07 0.16 0.04',
+      dur: 2500,
+      delay: i === 0 ? 4000 : 6500,
+      easing: 'easeInOutSine'
+    });
   });
 });
 
 alvo.addEventListener('targetLost', () => {
   caule.removeAttribute('animation');
   caule.setAttribute('height', 0.01);
-  caule.setAttribute('position', '0 0.3 0');
+  caule.setAttribute('position', '0 0.35 0');
 
-  folha1.removeAttribute('animation');
-  folha2.removeAttribute('animation');
-  folha1.setAttribute('scale', '0 0 0');
-  folha2.setAttribute('scale', '0 0 0');
+  folhas.forEach(folha => {
+    folha.removeAttribute('animation');
+    folha.setAttribute('scale', '0 0 0');
+  });
 });
 </script>
 </body>
 </html>
-
