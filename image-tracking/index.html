@@ -6,36 +6,40 @@
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 </head>
-
 <body>
 <a-scene mindar-image="imageTargetSrc: ./targets-2.mind"
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: false">
 
-  <a-camera position="0 0 0"
-    look-controls="enabled: false"></a-camera>
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-  <!-- Tudo fica ancorado à foto reconhecida -->
   <a-entity id="alvo" mindar-image-target="targetIndex: 0">
 
-    <!-- Casa -->
+    <!-- Casinha rosa -->
     <a-box position="0 0 0" width="0.8" height="0.5"
-      depth="0.4" color="#f3d9e8"></a-box>
-
+      depth="0.4" color="#f9e4ee"></a-box>
     <a-cone position="0 0.4 0" radius-bottom="0.6"
       radius-top="0" height="0.35" color="#d98ab5"></a-cone>
+    <a-box position="0 -0.15 0.21" width="0.13"
+      height="0.25" depth="0.02" color="#b87598"></a-box>
 
-    <!-- Caule cresce primeiro -->
+    <!-- Caule -->
     <a-cylinder id="caule" position="0 0.35 0"
-      radius="0.018" height="0.01"
-      color="#43875a"></a-cylinder>
+      radius="0.015" height="0.01" color="#43875a"></a-cylinder>
 
-    <!-- Folhas crescem depois, para lados opostos -->
-    <a-sphere id="folha1" position="-0.12 0.72 0"
-      scale="0 0 0" color="#65b879"></a-sphere>
+    <!-- Duas folhas -->
+    <a-sphere id="folha1" position="-0.12 0.65 0"
+      rotation="0 0 25" scale="0 0 0" color="#65b879"></a-sphere>
+    <a-sphere id="folha2" position="0.12 0.85 0"
+      rotation="0 0 -25" scale="0 0 0" color="#398b55"></a-sphere>
 
-    <a-sphere id="folha2" position="0.12 0.88 0"
-      scale="0 0 0" color="#398b55"></a-sphere>
+    <!-- Tulipa: pétalas cor-de-rosa -->
+    <a-sphere id="petala1" position="0 1.15 0"
+      scale="0 0 0" color="#f28ab5"></a-sphere>
+    <a-sphere id="petala2" position="-0.07 1.17 0"
+      scale="0 0 0" color="#ffb0cf"></a-sphere>
+    <a-sphere id="petala3" position="0.07 1.17 0"
+      scale="0 0 0" color="#e96a9f"></a-sphere>
 
   </a-entity>
 </a-scene>
@@ -47,41 +51,55 @@ const folhas = [
   document.querySelector('#folha1'),
   document.querySelector('#folha2')
 ];
+const petalas = [
+  document.querySelector('#petala1'),
+  document.querySelector('#petala2'),
+  document.querySelector('#petala3')
+];
 
-alvo.addEventListener('targetFound', () => {
-  caule.setAttribute('animation', {
-    property: 'height',
-    from: 0.01,
-    to: 0.65,
-    dur: 4000,
+function animar(el, escala, duracao, atraso) {
+  el.setAttribute('scale', '0 0 0');
+  el.setAttribute('animation', {
+    property: 'scale',
+    from: '0 0 0',
+    to: escala,
+    dur: duracao,
+    delay: atraso,
     easing: 'easeInOutSine'
   });
+}
 
-  caule.setAttribute('position', '0 0.67 0');
-
-  folhas.forEach((folha, i) => {
-    folha.setAttribute('scale', '0 0 0');
-    folha.setAttribute('animation', {
-      property: 'scale',
-      from: '0 0 0',
-      to: i === 0 ? '0.16 0.07 0.04' : '0.07 0.16 0.04',
-      dur: 2500,
-      delay: i === 0 ? 4000 : 6500,
-      easing: 'easeInOutSine'
-    });
-  });
-});
-
-alvo.addEventListener('targetLost', () => {
+function reiniciar() {
   caule.removeAttribute('animation');
   caule.setAttribute('height', 0.01);
   caule.setAttribute('position', '0 0.35 0');
-
-  folhas.forEach(folha => {
-    folha.removeAttribute('animation');
-    folha.setAttribute('scale', '0 0 0');
+  [...folhas, ...petalas].forEach(el => {
+    el.removeAttribute('animation');
+    el.setAttribute('scale', '0 0 0');
   });
+}
+
+alvo.addEventListener('targetFound', () => {
+  reiniciar();
+
+  caule.setAttribute('animation', {
+    property: 'height',
+    from: 0.01,
+    to: 0.75,
+    dur: 4500,
+    easing: 'easeInOutSine'
+  });
+  caule.setAttribute('position', '0 0.72 0');
+
+  animar(folhas[0], '0.17 0.07 0.05', 2200, 3500);
+  animar(folhas[1], '0.17 0.07 0.05', 2200, 5000);
+
+  animar(petalas[0], '0.09 0.14 0.07', 2500, 7000);
+  animar(petalas[1], '0.07 0.12 0.06', 2500, 7600);
+  animar(petalas[2], '0.07 0.12 0.06', 2500, 8200);
 });
+
+alvo.addEventListener('targetLost', reiniciar);
 </script>
 </body>
 </html>
